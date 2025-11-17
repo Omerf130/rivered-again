@@ -2,32 +2,32 @@
 
 import { useState, useEffect } from "react";
 
-interface Transaction {
+interface General {
   _id: string;
-  transaction: string;
+  title: string;
   amount: number;
   createdAt?: string;
   updatedAt?: string;
 }
 
-export default function Home() {
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
+export default function GeneralPage() {
+  const [generals, setGenerals] = useState<General[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [formData, setFormData] = useState({ transaction: "", amount: "" });
+  const [formData, setFormData] = useState({ title: "", amount: "" });
 
-  // Fetch all transactions
-  const fetchTransactions = async () => {
+  // Fetch all generals
+  const fetchGenerals = async () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch("/api/transactions");
+      const response = await fetch("/api/generals");
       const result = await response.json();
 
       if (result.ok) {
-        setTransactions(result.data);
+        setGenerals(result.data);
       } else {
-        setError(result.message || "Failed to fetch transactions");
+        setError(result.message || "Failed to fetch generals");
       }
     } catch (err: any) {
       setError(err.message || "An error occurred");
@@ -36,18 +36,18 @@ export default function Home() {
     }
   };
 
-  // Create a new transaction
+  // Create a new general
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setError(null);
-      const response = await fetch("/api/transactions", {
+      const response = await fetch("/api/generals", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          transaction: formData.transaction,
+          title: formData.title,
           amount: parseFloat(formData.amount),
         }),
       });
@@ -55,51 +55,50 @@ export default function Home() {
       const result = await response.json();
 
       if (result.ok) {
-        setFormData({ transaction: "", amount: "" });
-        fetchTransactions(); // Refresh the list
+        setFormData({ title: "", amount: "" });
+        fetchGenerals(); // Refresh the list
       } else {
-        setError(result.message || "Failed to create transaction");
+        setError(result.message || "Failed to create general");
       }
     } catch (err: any) {
       setError(err.message || "An error occurred");
     }
   };
 
-  // Delete a transaction
+  // Delete a general
   const handleDelete = async (id: string) => {
-    if (!confirm("Are you sure you want to delete this transaction?")) {
+    if (!confirm("Are you sure you want to delete this general?")) {
       return;
     }
 
     try {
       setError(null);
-      const response = await fetch(`/api/transactions/${id}`, {
+      const response = await fetch(`/api/generals/${id}`, {
         method: "DELETE",
       });
 
       const result = await response.json();
 
       if (result.ok) {
-        fetchTransactions(); // Refresh the list
+        fetchGenerals(); // Refresh the list
       } else {
-        setError(result.message || "Failed to delete transaction");
+        setError(result.message || "Failed to delete general");
       }
     } catch (err: any) {
       setError(err.message || "An error occurred");
     }
   };
 
-  // Load transactions on component mount
+  // Load generals on component mount
   useEffect(() => {
-    fetchTransactions();
+    fetchGenerals();
   }, []);
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black py-8 px-4">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold text-center mb-8 text-black dark:text-zinc-50">
-          Transaction Manager
-        </h1>
+    <>
+      <h1 className="text-4xl font-bold text-center mb-8 text-black dark:text-zinc-50">
+        General Manager
+      </h1>
 
         {/* Error Message */}
         {error && (
@@ -108,24 +107,24 @@ export default function Home() {
           </div>
         )}
 
-        {/* Add Transaction Form */}
+        {/* Add General Form */}
         <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 mb-8">
           <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
-            Add New Transaction
+            Add New General
           </h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-black dark:text-zinc-50">
-                Description
+                Title
               </label>
               <input
                 type="text"
-                value={formData.transaction}
+                value={formData.title}
                 onChange={(e) =>
-                  setFormData({ ...formData, transaction: e.target.value })
+                  setFormData({ ...formData, title: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
-                placeholder="Enter transaction description"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
+                placeholder="Enter general title"
                 required
               />
             </div>
@@ -140,51 +139,51 @@ export default function Home() {
                 onChange={(e) =>
                   setFormData({ ...formData, amount: e.target.value })
                 }
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
                 placeholder="Enter amount"
                 required
               />
             </div>
             <button
               type="submit"
-              className="w-full bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors font-medium"
+              className="w-full bg-orange-600 text-white py-2 px-4 rounded-lg hover:bg-orange-700 transition-colors font-medium"
             >
-              Add Transaction
+              Add General
             </button>
           </form>
         </div>
 
-        {/* Transactions List */}
+        {/* Generals List */}
         <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
-            Transactions
+            Generals
           </h2>
 
           {loading ? (
             <div className="text-center py-8 text-zinc-600 dark:text-zinc-400">
               Loading...
             </div>
-          ) : transactions.length === 0 ? (
+          ) : generals.length === 0 ? (
             <div className="text-center py-8 text-zinc-600 dark:text-zinc-400">
-              No transactions yet. Add one above!
+              No generals yet. Add one above!
             </div>
           ) : (
             <div className="space-y-3">
-              {transactions.map((transaction) => (
+              {generals.map((general) => (
                 <div
-                  key={transaction._id}
+                  key={general._id}
                   className="flex items-center justify-between p-4 border border-gray-200 dark:border-zinc-700 rounded-lg hover:bg-zinc-50 dark:hover:bg-zinc-800 transition-colors"
                 >
                   <div className="flex-1">
                     <p className="font-medium text-black dark:text-zinc-50">
-                      {transaction.transaction}
+                      {general.title}
                     </p>
                     <p className="text-sm text-zinc-600 dark:text-zinc-400">
-                      ${transaction.amount.toFixed(2)}
+                      ${general.amount.toFixed(2)}
                     </p>
                   </div>
                   <button
-                    onClick={() => handleDelete(transaction._id)}
+                    onClick={() => handleDelete(general._id)}
                     className="ml-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
                   >
                     Delete
@@ -194,7 +193,6 @@ export default function Home() {
             </div>
           )}
         </div>
-      </div>
-    </div>
+    </>
   );
 }
