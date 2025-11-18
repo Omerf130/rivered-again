@@ -7,6 +7,7 @@ export default function Navigation() {
   const pathname = usePathname();
 
   const navItems = [
+    { href: "/", label: "Home", color: "red" },
     { href: "/transactions", label: "Transactions", color: "blue" },
     { href: "/credit", label: "Credits", color: "green" },
     { href: "/plus", label: "Plus", color: "purple" },
@@ -19,6 +20,7 @@ export default function Navigation() {
       green: { base: "bg-green-600", hover: "hover:bg-green-700", active: "bg-green-800" },
       purple: { base: "bg-purple-600", hover: "hover:bg-purple-700", active: "bg-purple-800" },
       orange: { base: "bg-orange-600", hover: "hover:bg-orange-700", active: "bg-orange-800" },
+      red: { base: "bg-red-600", hover: "hover:bg-red-700", active: "bg-red-800" },
     };
 
     const colorClasses = colors[color] || colors.blue;
