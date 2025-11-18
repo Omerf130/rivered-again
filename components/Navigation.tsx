@@ -7,7 +7,7 @@ export default function Navigation() {
   const pathname = usePathname();
 
   const navItems = [
-    { href: "/", label: "Transactions", color: "blue" },
+    { href: "/transactions", label: "Transactions", color: "blue" },
     { href: "/credit", label: "Credits", color: "green" },
     { href: "/plus", label: "Plus", color: "purple" },
     { href: "/general", label: "General", color: "orange" },
