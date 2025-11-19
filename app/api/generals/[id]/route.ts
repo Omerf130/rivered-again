@@ -4,10 +4,10 @@ import { deleteGeneral } from "@/lib/generals";
 // DELETE - Delete a general
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ): Promise<NextResponse> {   // 👈 VERY IMPORTANT
   try {
-    const { id } = params;
+    const { id } = await params;
     await deleteGeneral(id);
 
     return NextResponse.json({

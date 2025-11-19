@@ -4,10 +4,12 @@ import { deletePlus } from "@/lib/pluses";
 // DELETE - Delete a plus
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
+
 ) {
   try {
-    const { id } = params;
+       const { id } = await params;
+
     await deletePlus(id);
     return Response.json({
       ok: true,

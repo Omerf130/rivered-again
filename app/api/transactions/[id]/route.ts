@@ -4,10 +4,12 @@ import { deleteTransaction } from "@/lib/transactions";
 // DELETE - Delete a transaction
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
+
 ) {
   try {
-    const { id } = params;
+        const { id } = await params;
+
     await deleteTransaction(id);
     return Response.json({
       ok: true,
