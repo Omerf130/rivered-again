@@ -26,10 +26,19 @@ interface Transaction {
   updatedAt?: string;
 }
 
+interface General {
+  _id: string;
+  title: string;
+  amount: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export default function Home() {
   const [credits, setCredits] = useState<Credit[]>([]);
   const [pluses, setPluses] = useState<Plus[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [generals, setGenerals] = useState<General[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -40,15 +49,17 @@ export default function Home() {
         setLoading(true);
         setError(null);
 
-        const [creditsRes, plusesRes, transactionsRes] = await Promise.all([
+        const [creditsRes, plusesRes, transactionsRes, generalsRes] = await Promise.all([
           fetch("/api/credits"),
           fetch("/api/pluses"),
           fetch("/api/transactions"),
+          fetch("/api/generals"),
         ]);
 
         const creditsData = await creditsRes.json();
         const plusesData = await plusesRes.json();
         const transactionsData = await transactionsRes.json();
+        const generalsData = await generalsRes.json();
 
         if (creditsData.ok) {
           setCredits(creditsData.data);
@@ -58,6 +69,9 @@ export default function Home() {
         }
         if (transactionsData.ok) {
           setTransactions(transactionsData.data);
+        }
+        if (generalsData.ok) {
+          setGenerals(generalsData.data);
         }
       } catch (err: any) {
         setError(err.message || "An error occurred");
@@ -76,6 +90,7 @@ export default function Home() {
     (sum: number, transaction: Transaction) => sum + transaction.amount,
     0
   );
+  const generalsSum = generals.reduce((sum: number, general: General) => sum + general.amount, 0);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black py-8 px-4">
@@ -95,7 +110,7 @@ export default function Home() {
             Loading...
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {/* Credits Container */}
             <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
               <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
@@ -205,6 +220,44 @@ export default function Home() {
                   </span>
                   <span className="text-lg font-bold text-black dark:text-zinc-50">
                     {transactionsSum}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Generals Container */}
+            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
+              <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
+                Generals
+              </h2>
+              <div className="flex-1 space-y-2 mb-4">
+                {generals.length === 0 ? (
+                  <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                    No generals
+                  </p>
+                ) : (
+                  generals.map((general) => (
+                    <div
+                      key={general._id}
+                      className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
+                    >
+                      <span className="text-black dark:text-zinc-50">
+                        {general.title}
+                      </span>
+                      <span className="text-black dark:text-zinc-50 font-medium">
+                        {general.amount}
+                      </span>
+                    </div>
+                  ))
+                )}
+              </div>
+              <div className="pt-4 border-t-2 border-gray-300 dark:border-zinc-600">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg font-bold text-black dark:text-zinc-50">
+                    sum:
+                  </span>
+                  <span className="text-lg font-bold text-black dark:text-zinc-50">
+                    {generalsSum}
                   </span>
                 </div>
               </div>
