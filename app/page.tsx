@@ -116,6 +116,7 @@ export default function Home() {
     0
   );
   const generalsSum = generals.reduce((sum: number, general: General) => sum + (general?.amount || 0), 0);
+  const specificCalc = creditsSum + (generals.find((general) => general.title === "הוצאות")?.amount || 0) - (generals.find((general) => general.title === "ציפים")?.amount || 0) - (generals.find((general) => general.title === "בד ביט")?.amount || 0)
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black py-8 px-4">
@@ -135,159 +136,166 @@ export default function Home() {
             Loading...
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {/* Credits Container */}
-            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
-              <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
-                Credits
-              </h2>
-              <div className="flex-1 space-y-2 mb-4">
-                {Object.keys(groupedCredits).length === 0 ? (
-                  <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-                    No credits
-                  </p>
-                ) : (
-                  Object.entries(groupedCredits).map(([name, amount]) => (
-                    <div
-                      key={name}
-                      className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
-                    >
-                      <span className="text-black dark:text-zinc-50">
-                        {name}
-                      </span>
-                      <span className="text-black dark:text-zinc-50 font-medium">
-                        {amount}
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="pt-4 border-t-2 border-gray-300 dark:border-zinc-600">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-black dark:text-zinc-50">
-                    sum:
-                  </span>
-                  <span className="text-lg font-bold text-black dark:text-zinc-50">
-                    {creditsSum}
-                  </span>
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Credits Container */}
+              <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
+                <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
+                  Credits
+                </h2>
+                <div className="flex-1 space-y-2 mb-4">
+                  {Object.keys(groupedCredits).length === 0 ? (
+                    <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                      No credits
+                    </p>
+                  ) : (
+                    Object.entries(groupedCredits).map(([name, amount]) => (
+                      <div
+                        key={name}
+                        className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
+                      >
+                        <span className="text-black dark:text-zinc-50">
+                          {name}
+                        </span>
+                        <span className="text-black dark:text-zinc-50 font-medium">
+                          {amount}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="pt-4 border-t-2 border-gray-300 dark:border-zinc-600">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-black dark:text-zinc-50">
+                      sum:
+                    </span>
+                    <span className="text-lg font-bold text-black dark:text-zinc-50">
+                      {creditsSum}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Pluses Container */}
-            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
-              <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
-                Pluses
-              </h2>
-              <div className="flex-1 space-y-2 mb-4">
-                {Object.keys(groupedPluses).length === 0 ? (
-                  <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-                    No pluses
-                  </p>
-                ) : (
-                  Object.entries(groupedPluses).map(([name, amount]) => (
-                    <div
-                      key={name}
-                      className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
-                    >
-                      <span className="text-black dark:text-zinc-50">
-                        {name}
-                      </span>
-                      <span className="text-black dark:text-zinc-50 font-medium">
-                        {amount}
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="pt-4 border-t-2 border-gray-300 dark:border-zinc-600">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-black dark:text-zinc-50">
-                    sum:
-                  </span>
-                  <span className="text-lg font-bold text-black dark:text-zinc-50">
-                    {plusesSum}
-                  </span>
+              {/* Pluses Container */}
+              <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
+                <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
+                  Pluses
+                </h2>
+                <div className="flex-1 space-y-2 mb-4">
+                  {Object.keys(groupedPluses).length === 0 ? (
+                    <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                      No pluses
+                    </p>
+                  ) : (
+                    Object.entries(groupedPluses).map(([name, amount]) => (
+                      <div
+                        key={name}
+                        className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
+                      >
+                        <span className="text-black dark:text-zinc-50">
+                          {name}
+                        </span>
+                        <span className="text-black dark:text-zinc-50 font-medium">
+                          {amount}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="pt-4 border-t-2 border-gray-300 dark:border-zinc-600">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-black dark:text-zinc-50">
+                      sum:
+                    </span>
+                    <span className="text-lg font-bold text-black dark:text-zinc-50">
+                      {plusesSum}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Transactions Container */}
-            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
-              <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
-                Transactions
-              </h2>
-              <div className="flex-1 space-y-2 mb-4">
-                {Object.keys(groupedTransactions).length === 0 ? (
-                  <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-                    No transactions
-                  </p>
-                ) : (
-                  Object.entries(groupedTransactions).map(([transaction, amount]) => (
-                    <div
-                      key={transaction}
-                      className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
-                    >
-                      <span className="text-black dark:text-zinc-50">
-                        {transaction}
-                      </span>
-                      <span className="text-black dark:text-zinc-50 font-medium">
-                        {amount}
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="pt-4 border-t-2 border-gray-300 dark:border-zinc-600">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-black dark:text-zinc-50">
-                    sum:
-                  </span>
-                  <span className="text-lg font-bold text-black dark:text-zinc-50">
-                    {transactionsSum}
-                  </span>
+              {/* Transactions Container */}
+              <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
+                <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
+                  Transactions
+                </h2>
+                <div className="flex-1 space-y-2 mb-4">
+                  {Object.keys(groupedTransactions).length === 0 ? (
+                    <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                      No transactions
+                    </p>
+                  ) : (
+                    Object.entries(groupedTransactions).map(([transaction, amount]) => (
+                      <div
+                        key={transaction}
+                        className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
+                      >
+                        <span className="text-black dark:text-zinc-50">
+                          {transaction}
+                        </span>
+                        <span className="text-black dark:text-zinc-50 font-medium">
+                          {amount}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="pt-4 border-t-2 border-gray-300 dark:border-zinc-600">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-black dark:text-zinc-50">
+                      sum:
+                    </span>
+                    <span className="text-lg font-bold text-black dark:text-zinc-50">
+                      {transactionsSum}
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Generals Container */}
-            <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
-              <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
-                Generals
-              </h2>
-              <div className="flex-1 space-y-2 mb-4">
-                {Object.keys(groupedGenerals).length === 0 ? (
-                  <p className="text-zinc-600 dark:text-zinc-400 text-sm">
-                    No generals
-                  </p>
-                ) : (
-                  Object.entries(groupedGenerals).map(([title, amount]) => (
-                    <div
-                      key={title}
-                      className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
-                    >
-                      <span className="text-black dark:text-zinc-50">
-                        {title}
-                      </span>
-                      <span className="text-black dark:text-zinc-50 font-medium">
-                        {amount}
-                      </span>
-                    </div>
-                  ))
-                )}
-              </div>
-              <div className="pt-4 border-t-2 border-gray-300 dark:border-zinc-600">
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-bold text-black dark:text-zinc-50">
-                    sum:
-                  </span>
-                  <span className="text-lg font-bold text-black dark:text-zinc-50">
-                    {generalsSum}
-                  </span>
+              {/* Generals Container */}
+              <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 flex flex-col">
+                <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
+                  Generals
+                </h2>
+                <div className="flex-1 space-y-2 mb-4">
+                  {Object.keys(groupedGenerals).length === 0 ? (
+                    <p className="text-zinc-600 dark:text-zinc-400 text-sm">
+                      No generals
+                    </p>
+                  ) : (
+                    Object.entries(groupedGenerals).map(([title, amount]) => (
+                      <div
+                        key={title}
+                        className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
+                      >
+                        <span className="text-black dark:text-zinc-50">
+                          {title}
+                        </span>
+                        <span className="text-black dark:text-zinc-50 font-medium">
+                          {amount}
+                        </span>
+                      </div>
+                    ))
+                  )}
+                </div>
+                <div className="pt-4 border-t-2 border-gray-300 dark:border-zinc-600">
+                  <div className="flex justify-between items-center">
+                    <span className="text-lg font-bold text-black dark:text-zinc-50">
+                      sum:
+                    </span>
+                    <span className="text-lg font-bold text-black dark:text-zinc-50">
+                      {generalsSum}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+            <div className="specificCalc" style={{ display: "flex", justifyContent: "center", padding: "20px", gap:"15px" }}>
+              <div style={{fontSize:"24px"}}>{specificCalc}</div>
+              <h1 style={{fontSize:"24px"}}>גנייה
+              </h1>
+            </div>
+          </>
         )}
       </div>
     </div>
