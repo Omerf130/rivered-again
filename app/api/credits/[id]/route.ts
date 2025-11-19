@@ -1,27 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deleteTransaction, updateTransaction } from "@/lib/transactions";
+import { deleteCredit, updateCredit } from "@/lib/credits";
 
-// DELETE - Delete a transaction
+// DELETE - Delete a credit
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     const { id } = await params;
-    await deleteTransaction(id);
+    await deleteCredit(id);
     return Response.json({
       ok: true,
-      message: "Transaction deleted successfully",
+      message: "Credit deleted successfully",
     });
   } catch (error: any) {
     return Response.json(
-      { ok: false, message: "Failed to delete transaction", error: error.message },
+      { ok: false, message: "Failed to delete credit", error: error.message },
       { status: 500 }
     );
   }
 }
 
-// PUT - Update a transaction
+// PUT - Update a credit
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -29,12 +29,12 @@ export async function PUT(
   try {
     const { id } = await params;
     const body = await request.json();
-    const { transaction, amount } = body;
+    const { name, amount } = body;
 
     // Validation
-    if (!transaction || typeof transaction !== "string") {
+    if (!name || typeof name !== "string") {
       return Response.json(
-        { ok: false, message: "Transaction description is required" },
+        { ok: false, message: "Name is required" },
         { status: 400 }
       );
     }
@@ -46,16 +46,16 @@ export async function PUT(
       );
     }
 
-    const updatedTransaction = await updateTransaction(id, { transaction, amount });
+    const updatedCredit = await updateCredit(id, { name, amount });
 
     return NextResponse.json({
       ok: true,
-      message: "Transaction updated successfully",
-      data: updatedTransaction,
+      message: "Credit updated successfully",
+      data: updatedCredit,
     });
   } catch (error: any) {
     return NextResponse.json(
-      { ok: false, message: "Failed to update transaction", error: error.message },
+      { ok: false, message: "Failed to update credit", error: error.message },
       { status: 500 }
     );
   }

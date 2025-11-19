@@ -15,6 +15,8 @@ export default function CreditPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({ name: "", amount: "" });
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editFormData, setEditFormData] = useState({ name: "", amount: "" });
 
   // Fetch all credits
   const fetchCredits = async () => {
@@ -59,6 +61,53 @@ export default function CreditPage() {
         fetchCredits(); // Refresh the list
       } else {
         setError(result.message || "Failed to create credit");
+      }
+    } catch (err: any) {
+      setError(err.message || "An error occurred");
+    }
+  };
+
+  // Start editing a credit
+  const handleEdit = (credit: Credit) => {
+    setEditingId(credit._id);
+    setEditFormData({
+      name: credit.name,
+      amount: credit.amount.toString(),
+    });
+  };
+
+  // Cancel editing
+  const handleCancelEdit = () => {
+    setEditingId(null);
+    setEditFormData({ name: "", amount: "" });
+  };
+
+  // Update a credit
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingId) return;
+
+    try {
+      setError(null);
+      const response = await fetch(`/api/credits/${editingId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          name: editFormData.name,
+          amount: parseFloat(editFormData.amount),
+        }),
+      });
+
+      const result = await response.json();
+
+      if (result.ok) {
+        setEditingId(null);
+        setEditFormData({ name: "", amount: "" });
+        fetchCredits(); // Refresh the list
+      } else {
+        setError(result.message || "Failed to update credit");
       }
     } catch (err: any) {
       setError(err.message || "An error occurred");
@@ -153,6 +202,63 @@ export default function CreditPage() {
           </form>
         </div>
 
+        {/* Edit Credit Form (shown when editing) */}
+        {editingId && (
+          <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6 mb-8 border-2 border-green-500">
+            <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
+              Edit Credit
+            </h2>
+            <form onSubmit={handleUpdate} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2 text-black dark:text-zinc-50">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  value={editFormData.name}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, name: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
+                  placeholder="Enter credit name"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2 text-black dark:text-zinc-50">
+                  Amount
+                </label>
+                <input
+                  type="number"
+                  step="0.01"
+                  value={editFormData.amount}
+                  onChange={(e) =>
+                    setEditFormData({ ...editFormData, amount: e.target.value })
+                  }
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-transparent dark:bg-zinc-800 dark:border-zinc-700 dark:text-zinc-50"
+                  placeholder="Enter amount"
+                  required
+                />
+              </div>
+              <div className="flex gap-2">
+                <button
+                  type="submit"
+                  className="flex-1 bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 transition-colors font-medium"
+                >
+                  Update Credit
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCancelEdit}
+                  className="flex-1 bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors font-medium"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
         {/* Credits List */}
         <div className="bg-white dark:bg-zinc-900 rounded-lg shadow-md p-6">
           <h2 className="text-2xl font-semibold mb-4 text-black dark:text-zinc-50">
@@ -182,12 +288,20 @@ export default function CreditPage() {
                       ${credit.amount.toFixed(2)}
                     </p>
                   </div>
-                  <button
-                    onClick={() => handleDelete(credit._id)}
-                    className="ml-4 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
-                  >
-                    Delete
-                  </button>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(credit)}
+                      className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(credit._id)}
+                      className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors text-sm font-medium"
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ))}
             </div>
