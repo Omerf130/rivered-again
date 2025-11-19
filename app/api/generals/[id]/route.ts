@@ -26,12 +26,11 @@ export async function DELETE(
   }
 }
 
-
 // PUT - Update a general
 export async function PUT(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
-) {
+): Promise<NextResponse> {
   try {
     const { id } = await params;
     const body = await request.json();
@@ -39,14 +38,14 @@ export async function PUT(
 
     // Validation
     if (!title || typeof title !== "string") {
-      return Response.json(
-        { ok: false, message: "title is required" },
+      return NextResponse.json(
+        { ok: false, message: "Title is required" },
         { status: 400 }
       );
     }
 
     if (amount === undefined || typeof amount !== "number") {
-      return Response.json(
+      return NextResponse.json(
         { ok: false, message: "Amount is required and must be a number" },
         { status: 400 }
       );
@@ -56,7 +55,7 @@ export async function PUT(
 
     return NextResponse.json({
       ok: true,
-      message: "general updated successfully",
+      message: "General updated successfully",
       data: updatedGeneral,
     });
   } catch (error: any) {

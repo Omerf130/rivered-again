@@ -42,7 +42,7 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch all data
+  // Fetch all data (credits, pluses, transactions, generals)
   useEffect(() => {
     const fetchAllData = async () => {
       try {
@@ -70,7 +70,7 @@ export default function Home() {
         if (transactionsData.ok) {
           setTransactions(transactionsData.data);
         }
-        if (generalsData.ok) {
+        if (generalsData.ok && Array.isArray(generalsData.data)) {
           setGenerals(generalsData.data);
         }
       } catch (err: any) {
@@ -83,14 +83,39 @@ export default function Home() {
     fetchAllData();
   }, []);
 
+  // Group and sum by name/title (trimmed to ignore leading/trailing spaces)
+  const groupedCredits = credits.reduce((acc: Record<string, number>, credit: Credit) => {
+    const trimmedName = credit.name.trim();
+    acc[trimmedName] = (acc[trimmedName] || 0) + credit.amount;
+    return acc;
+  }, {});
+
+  const groupedPluses = pluses.reduce((acc: Record<string, number>, plus: Plus) => {
+    const trimmedName = plus.name.trim();
+    acc[trimmedName] = (acc[trimmedName] || 0) + plus.amount;
+    return acc;
+  }, {});
+
+  const groupedTransactions = transactions.reduce((acc: Record<string, number>, transaction: Transaction) => {
+    const trimmedTransaction = transaction.transaction.trim();
+    acc[trimmedTransaction] = (acc[trimmedTransaction] || 0) + transaction.amount;
+    return acc;
+  }, {});
+
+  const groupedGenerals = generals.reduce((acc: Record<string, number>, general: General) => {
+    const trimmedTitle = general.title.trim();
+    acc[trimmedTitle] = (acc[trimmedTitle] || 0) + (general?.amount || 0);
+    return acc;
+  }, {});
+
   // Calculate sums
-  const creditsSum = credits.reduce((sum: number, credit: Credit) => sum + credit.amount, 0);
-  const plusesSum = pluses.reduce((sum: number, plus: Plus) => sum + plus.amount, 0);
+  const creditsSum = credits.reduce((sum: number, credit: Credit) => sum + (credit.amount || 0), 0);
+  const plusesSum = pluses.reduce((sum: number, plus: Plus) => sum + (plus.amount || 0), 0);
   const transactionsSum = transactions.reduce(
-    (sum: number, transaction: Transaction) => sum + transaction.amount,
+    (sum: number, transaction: Transaction) => sum + (transaction.amount || 0),
     0
   );
-  const generalsSum = generals.reduce((sum: number, general: General) => sum + general.amount, 0);
+  const generalsSum = generals.reduce((sum: number, general: General) => sum + (general?.amount || 0), 0);
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black py-8 px-4">
@@ -117,21 +142,21 @@ export default function Home() {
                 Credits
               </h2>
               <div className="flex-1 space-y-2 mb-4">
-                {credits.length === 0 ? (
+                {Object.keys(groupedCredits).length === 0 ? (
                   <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                     No credits
                   </p>
                 ) : (
-                  credits.map((credit) => (
+                  Object.entries(groupedCredits).map(([name, amount]) => (
                     <div
-                      key={credit._id}
+                      key={name}
                       className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
                     >
                       <span className="text-black dark:text-zinc-50">
-                        {credit.name}
+                        {name}
                       </span>
                       <span className="text-black dark:text-zinc-50 font-medium">
-                        {credit.amount}
+                        {amount}
                       </span>
                     </div>
                   ))
@@ -155,21 +180,21 @@ export default function Home() {
                 Pluses
               </h2>
               <div className="flex-1 space-y-2 mb-4">
-                {pluses.length === 0 ? (
+                {Object.keys(groupedPluses).length === 0 ? (
                   <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                     No pluses
                   </p>
                 ) : (
-                  pluses.map((plus) => (
+                  Object.entries(groupedPluses).map(([name, amount]) => (
                     <div
-                      key={plus._id}
+                      key={name}
                       className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
                     >
                       <span className="text-black dark:text-zinc-50">
-                        {plus.name}
+                        {name}
                       </span>
                       <span className="text-black dark:text-zinc-50 font-medium">
-                        {plus.amount}
+                        {amount}
                       </span>
                     </div>
                   ))
@@ -193,21 +218,21 @@ export default function Home() {
                 Transactions
               </h2>
               <div className="flex-1 space-y-2 mb-4">
-                {transactions.length === 0 ? (
+                {Object.keys(groupedTransactions).length === 0 ? (
                   <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                     No transactions
                   </p>
                 ) : (
-                  transactions.map((transaction) => (
+                  Object.entries(groupedTransactions).map(([transaction, amount]) => (
                     <div
-                      key={transaction._id}
+                      key={transaction}
                       className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
                     >
                       <span className="text-black dark:text-zinc-50">
-                        {transaction.transaction}
+                        {transaction}
                       </span>
                       <span className="text-black dark:text-zinc-50 font-medium">
-                        {transaction.amount}
+                        {amount}
                       </span>
                     </div>
                   ))
@@ -231,21 +256,21 @@ export default function Home() {
                 Generals
               </h2>
               <div className="flex-1 space-y-2 mb-4">
-                {generals.length === 0 ? (
+                {Object.keys(groupedGenerals).length === 0 ? (
                   <p className="text-zinc-600 dark:text-zinc-400 text-sm">
                     No generals
                   </p>
                 ) : (
-                  generals.map((general) => (
+                  Object.entries(groupedGenerals).map(([title, amount]) => (
                     <div
-                      key={general._id}
+                      key={title}
                       className="flex justify-between items-center py-2 border-b border-gray-200 dark:border-zinc-700"
                     >
                       <span className="text-black dark:text-zinc-50">
-                        {general.title}
+                        {title}
                       </span>
                       <span className="text-black dark:text-zinc-50 font-medium">
-                        {general.amount}
+                        {amount}
                       </span>
                     </div>
                   ))
