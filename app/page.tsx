@@ -116,7 +116,7 @@ export default function Home() {
     0
   );
   const generalsSum = generals.reduce((sum: number, general: General) => sum + (general?.amount || 0), 0);
-  const specificCalc = creditsSum + (generals.find((general) => general.title === "הוצאות")?.amount || 0) - (generals.find((general) => general.title === "ציפים")?.amount || 0) - (generals.find((general) => general.title === "בד ביט")?.amount || 0)
+  const specificCalc =  transactionsSum + creditsSum - generalsSum - plusesSum ;
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-black py-8 px-4">
